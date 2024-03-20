@@ -1,0 +1,14 @@
+# Lines starting with '#' are comments.
+# Each line is a file pattern followed by one or more owners.
+# see https://help.github.com/en/articles/about-code-owners
+
+# Order is important. The last matching pattern has the most precedence.
+
+# everything at the root, or inside docs, schema, scripts requires azure stack hci templates owner team review
+* @azure/hci-quickstart-templates-owners
+
+# teams that want to lock down their templates would insert rows here with the path to their template and the users/teams they want to own the items
+# anything not specified will default to requiring review by the workbooks team
+# it also appears that spaces in directory names are not well handled or are handled differently on different platforms. so here * is used instead of spaces.
+
+/test/microsoft.azurestackhci/** @azure/hci-quickstart-templates-owners
