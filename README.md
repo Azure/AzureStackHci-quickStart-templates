@@ -1,14 +1,10 @@
-# Project
+# Azure Stack HCI QuickStart Templates
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+This repo contains all currently available Azure Stack Hci templates contributed by the community and our partners to help deploy an Azure Stack HCI cluster in the cloud quickly and effortlessly through the [Deploy Azure Stack HCI](https://portal.azure.com/#view/Microsoft_Azure_HybridCompute/AzureArcCenterBlade/~/hciGetStarted) flow. 
 
-As the maintainer of this project, please make a few updates:
+### NOTE:
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+We have created separate folder structures for the Partner templates for our partners to contribute their repo and another folder for Microsoft Templates where all other common templates can go in. Please follow the folder structures for contributing to this repository.
 
 ## Contributing
 
