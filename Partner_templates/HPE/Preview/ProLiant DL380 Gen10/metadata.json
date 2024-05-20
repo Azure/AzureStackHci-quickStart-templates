@@ -6,8 +6,9 @@
     "summary": "This template creates an Azure Stack HCI 23H2 cluster using an ARM template.",
     "githubUsername": "troettinger",
     "validationType": "Manual",
-    "dateUpdated": "2024-05-19",
+    "dateUpdated": "2024-05-20",
     "tags": {
         "model": "ProLiant DL380 Gen10"
-    }
+    },
+    "eula": "By accepting this EULA you agree to the terms and conditions of this sample"
   }
