@@ -1,0 +1,223 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "apiVersion": {
+            "value": "2024-02-15-preview"
+        },
+        "deploymentMode": {
+            "value": ""
+        },
+        "keyVaultName": {
+            "value": ""
+        },
+        "softDeleteRetentionDays": {
+            "value": 30
+        },
+        "diagnosticStorageAccountName": {
+            "value": ""
+        },
+        "logsRetentionInDays": {
+            "value": 30
+        },
+        "storageAccountType": {
+            "value": "Standard_LRS"
+        },
+        "clusterName": {
+            "value": ""
+        },
+        "location": {
+            "value": ""
+        },
+        "tenantId": {
+            "value": ""
+        },
+        "witnessType": {
+            "value": "Cloud"
+        },
+        "clusterWitnessStorageAccountName": {
+            "value": ""
+        },
+        "localAdminUserName": {
+            "value": ""
+        },
+        "localAdminPassword": {
+            "value": null
+        },
+        "AzureStackLCMAdminUsername": {
+            "value": ""
+        },
+        "AzureStackLCMAdminPasssword": {
+            "value": null
+        },
+        "arbDeploymentAppID": {
+            "value": ""
+        },
+        "arbDeploymentAppSecret": {
+            "value": null
+        },
+        "arbDeploymentSPNObjectID": {
+            "value": ""
+        },
+        "hciResourceProviderObjectID": {
+            "value": ""
+        },
+        "arcNodeResourceIds": {
+            "value": []
+        },
+        "domainFqdn": {
+            "value": ""
+        },
+        "namingPrefix": {
+            "value": "HCI002"
+        },
+        "adouPath": {
+            "value": ""
+        },
+        "securityLevel": {
+            "value": "Recommended"
+        },
+        "driftControlEnforced": {
+            "value": true
+        },
+        "credentialGuardEnforced": {
+            "value": true
+        },
+        "smbSigningEnforced": {
+            "value": true
+        },
+        "smbClusterEncryption": {
+            "value": false
+        },
+        "bitlockerBootVolume": {
+            "value": true
+        },
+        "bitlockerDataVolumes": {
+            "value": true
+        },
+        "wdacEnforced": {
+            "value": true
+        },
+        "streamingDataClient": {
+            "value": true
+        },
+        "euLocation": {
+            "value": false
+        },
+        "episodicDataUpload": {
+            "value": true
+        },
+        "configurationMode": {
+            "value": "Express"
+        },
+        "subnetMask": {
+            "value": ""
+        },
+        "defaultGateway": {
+            "value": ""
+        },
+        "startingIPAddress": {
+            "value": ""
+        },
+        "endingIPAddress": {
+            "value": ""
+        },
+        "dnsServers": {
+            "value": [
+                ""
+            ]
+        },
+        "useDhcp": {
+            "value": false
+        },
+        "physicalNodesSettings": {
+            "value": [
+                {
+                    "name": "",
+                    "ipv4Address": ""
+                }
+            ]
+        },
+        "networkingType": {
+            "value": "switchedMultiServerDeployment"
+        },
+        "networkingPattern": {
+            "value": "hyperConverged"
+        },
+        "intentList": {
+            "value": [
+                {
+                    "name": "Compute_Management_Storage",
+                    "trafficType": [
+                        "Management",
+                        "Compute",
+                        "Storage"
+                    ],
+                    "adapter": [
+                        "Port0",
+                        "Port1"
+                    ],
+                    "overrideVirtualSwitchConfiguration": false,
+                    "virtualSwitchConfigurationOverrides": {
+                        "enableIov": "",
+                        "loadBalancingAlgorithm": ""
+                    },
+                    "overrideQosPolicy": true,
+                    "qosPolicyOverrides": {
+                        "priorityValue8021Action_Cluster": "7",
+                        "priorityValue8021Action_SMB": "3",
+                        "bandwidthPercentage_SMB": "50"
+                    },
+                    "overrideAdapterProperty": true,
+                    "adapterPropertyOverrides": {
+                        "jumboPacket": "9014",
+                        "networkDirect": "Enabled",
+                        "networkDirectTechnology": "RoCEv2"
+                    }
+                }
+            ]
+        },
+        "storageNetworkList": {
+            "value": [
+                {
+                    "name": "StorageNetwork1",
+                    "networkAdapterName": "Port0",
+                    "vlanId": "711"
+                },
+                {
+                    "name": "StorageNetwork2",
+                    "networkAdapterName": "Port1",
+                    "vlanId": "712"
+                }
+            ]
+        },
+        "storageConnectivitySwitchless": {
+            "value": false
+        },
+        "customLocation": {
+            "value": ""
+        },
+        "sbeVersion":{
+            "value": ""
+          },
+          "sbeFamily":{
+            "value": ""
+          },
+          "sbePublisher":{
+            "value": ""
+          },
+          "sbeManifestSource":{
+            "value": ""
+          },
+          "sbeManifestCreationDate":{
+            "value": ""
+          },
+          "partnerProperties": {
+            "value":[
+            ]
+          },
+        "partnerCredentiallist": {
+            "value": []
+          }
+    }
+}
