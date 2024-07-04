@@ -1,0 +1,30 @@
+{
+    "apiVersion": {
+        "value": "2024-04-01"
+    },
+    "configurationMode": {
+        "value": "Express"
+    },
+    "deploymentMode": {
+        "value": "Validate"
+    },
+    "enableStorageAutoIp": {
+        "value": true
+    },
+    "episodicDataUpload": {
+        "value": true
+    },
+    "euLocation": {
+        "value": true
+    },     
+    "storageConnectivitySwitchless": {
+        "value": false
+    },
+  
+    "streamingDataClient": {
+        "value": true
+    },
+    "useDhcp": {
+        "value": false
+    }
+}
