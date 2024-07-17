@@ -3,11 +3,10 @@
   "contentVersion":"1.0.0.0",
   "parameters":{
       "networkingType": {
-            "defaultValue": "switchedMultiServerDeployment",
+            "defaultValue": "singleServerDeployment",
             "type": "string",
             "allowedValues": [
-                "switchedMultiServerDeployment",
-                "switchlessMultiServerDeployment"
+                "singleServerDeployment"
               ],
             "metadata": {
                 "description": "The networking type for deploying a hci cluster"
@@ -18,7 +17,6 @@
             "type": "string",
             "allowedValues": [
               "hyperConverged",
-              "convergedManagementCompute",
               "custom"
             ],
             "metadata": {
@@ -29,8 +27,7 @@
         "defaultValue": "Recommended",
         "type": "string",
         "allowedValues": [
-            "Recommended",
-            "Customized"
+            "Recommended"
         ],
         "metadata": {
             "description": "The security level data for deploying a hci cluster"
@@ -345,12 +342,8 @@
       "physicalNodesSettings":{
           "defaultValue":[
               {
-                "name": "node1",
-                "ipv4Address": "100.69.32.64"
-              },
-              {
-                "name": "node2",
-                "ipv4Address": "100.69.32.65"
+                  "name":"node1",
+                  "ipv4Address":"10.124.84.101"
               }
           ],
           "type":"array",

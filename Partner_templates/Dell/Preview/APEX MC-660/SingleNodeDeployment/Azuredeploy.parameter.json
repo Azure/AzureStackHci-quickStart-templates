@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "networkingType": {
-            "value": "switchedMultiServerDeployment"
+            "value": "singleServerDeployment"
         },
         "networkingPattern": {
             "value": "hyperConverged"
@@ -163,18 +163,7 @@
             ]
         },
         "storageNetworkList": {
-            "value": [
-                {
-                    "name": "StorageNetwork1",
-                    "networkAdapterName": "Port0",
-                    "vlanId": "711"
-                },
-                {
-                    "name": "StorageNetwork2",
-                    "networkAdapterName": "Port1",
-                    "vlanId": "712"
-                }
-            ]
+            "value": []
         },
         "storageConnectivitySwitchless": {
             "value": false
