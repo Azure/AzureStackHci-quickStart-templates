@@ -6,9 +6,7 @@
             "defaultValue": "switchedMultiServerDeployment",
             "type": "string",
             "allowedValues": [
-                "switchedMultiServerDeployment",
-                "switchlessMultiServerDeployment",
-                "singleServerDeployment"
+                "switchedMultiServerDeployment"
               ],
             "metadata": {
                 "description": "The networking type for deploying a hci cluster"
@@ -19,9 +17,7 @@
             "type": "string",
             "allowedValues": [
               "hyperConverged",
-              "convergedManagementCompute",
-              "managementComputeOnly",
-              "custom"
+              "convergedManagementCompute"
             ],
             "metadata": {
                 "description": "The networking pattern for deploying a hci cluster"
@@ -31,8 +27,7 @@
         "defaultValue": "Recommended",
         "type": "string",
         "allowedValues": [
-            "Recommended",
-            "Customized"
+            "Recommended"
         ],
         "metadata": {
             "description": "The security level data for deploying a hci cluster"

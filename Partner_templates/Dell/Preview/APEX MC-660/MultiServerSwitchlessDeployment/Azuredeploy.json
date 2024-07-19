@@ -3,21 +3,20 @@
   "contentVersion":"1.0.0.0",
   "parameters":{
       "networkingType": {
-            "defaultValue": "singleServerDeployment",
+            "defaultValue": "switchlessMultiServerDeployment",
             "type": "string",
             "allowedValues": [
-                "singleServerDeployment"
+                "switchlessMultiServerDeployment"
               ],
             "metadata": {
                 "description": "The networking type for deploying a hci cluster"
             }
         },
       "networkingPattern": {
-            "defaultValue": "hyperConverged",
+            "defaultValue": "convergedManagementCompute",
             "type": "string",
             "allowedValues": [
-              "hyperConverged",
-              "custom"
+              "convergedManagementCompute"
             ],
             "metadata": {
                 "description": "The networking pattern for deploying a hci cluster"
@@ -342,8 +341,12 @@
       "physicalNodesSettings":{
           "defaultValue":[
               {
-                  "name":"node1",
-                  "ipv4Address":"10.124.84.101"
+                "name": "node1",
+                "ipv4Address": "100.69.32.64"
+              },
+              {
+                "name": "node2",
+                "ipv4Address": "100.69.32.65"
               }
           ],
           "type":"array",
@@ -381,6 +384,7 @@
       }
   },
   "variables": {
+    "storageWitnessNameVar": "WitnessStorageKey",
     "LocalAdminCredentialSecretName": "LocalAdminCredential",
     "domainAdminSecretName": "AzureStackLCMUserCredential",
     "arbDeploymentSpnSecretName": "DefaultARBApplication",
@@ -390,7 +394,9 @@
     "AzureServiceEndpointVar": "[if(equals(parameters('witnessType'), 'No Witness'), '', 'core.windows.net')]",
     "localAdminSecretValue": "[base64(concat(parameters('localAdminUserName'),':',parameters('localAdminPassword')))]",
     "domainAdminSecretValueVar": "[base64(concat(parameters('AzureStackLCMAdminUsername'),':',parameters('AzureStackLCMAdminPasssword')))]",
-    "arbDeploymentSpnValueVar": "[base64(concat(parameters('arbDeploymentAppID'),':',parameters('arbDeploymentAppSecret')))]"
+    "arbDeploymentSpnValueVar": "[base64(concat(parameters('arbDeploymentAppID'),':',parameters('arbDeploymentAppSecret')))]",
+    "CloudWithnessStorageAccountIdVar": "[resourceId('Microsoft.Storage/storageAccounts', parameters('clusterWitnessStorageAccountName'))]"
+
   },
   "resources":[
       {
@@ -447,7 +453,21 @@
           "enabled": true
         }
       }
-    },   
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2021-06-01-preview",
+      "name": "[concat(parameters('keyVaultName'), '/', variables('storageWitnessNameVar'))]",
+      "location": "[parameters('location')]",
+      "scale": null,
+      "properties": {
+        "contentType": "Secret",
+        "value": "[base64(listKeys(variables('CloudWithnessStorageAccountIdVar'), '2019-04-01').keys[0].value)]",
+        "attributes": {
+          "enabled": true
+        }
+      }
+    },
     {
           "type":"microsoft.azurestackhci/clusters/deploymentSettings",
           "apiVersion":"[parameters('apiVersion')]",
