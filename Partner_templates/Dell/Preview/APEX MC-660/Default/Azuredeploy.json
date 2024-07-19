@@ -461,6 +461,7 @@
       }
     },
     {
+      "condition": "[equals(toLower(parameters('witnessType')), 'cloud')]",
       "type": "Microsoft.KeyVault/vaults/secrets",
       "apiVersion": "2021-06-01-preview",
       "name": "[concat(parameters('keyVaultName'), '/', variables('storageWitnessNameVar'))]",
