@@ -1,0 +1,21 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+            "value": "myWorkspace"
+        },
+        "clusterArmId": {
+            "value": "/subscriptions/mysubscriptionid/resourceGroups/myresourcegroup/providers/Microsoft.Kubernetes/connectedClusters/mycluster"
+        },
+        "onlineEndpointName": {
+            "value": "myEndpt"
+        },
+        "computeName": {
+            "value": "myCompute"
+        },
+        "instanceType": {
+            "value": "myInstanceType"
+        }
+    }
+}

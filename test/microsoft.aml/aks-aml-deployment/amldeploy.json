@@ -1,0 +1,203 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "languageVersion": "2.0",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "clusterArmId": {
+        "type": "String",
+        "metadata": {
+          "description": "Specifies the armid of the k8s cluster."
+        }
+      },
+      "workspaceName": {
+        "type": "String",
+        "metadata": {
+          "description": "Specifies the name of the Azure Machine Learning workspace which will hold the endpoint target."
+        }
+      },
+      "location": {
+        "defaultValue": "[resourceGroup().location]",
+        "type": "String",
+        "metadata": {
+          "description": "The location of the Azure Machine Learning components."
+        }
+      },
+      "onlineEndpointName": {
+        "type": "String"
+      },
+      "model": {
+        "type": "String",
+        "defaultValue": "yolof",
+        "allowedValues": [
+          "yolof",
+          "whisper"
+        ]
+      },
+      "computeName": {
+        "type": "String"
+      },
+      "description": {
+        "defaultValue": "This is created by an ARM template",
+        "type": "String"
+      },
+      "identityType": {
+        "defaultValue": "SystemAssigned",
+        "allowedValues": [
+          "SystemAssigned",
+          "UserAssigned",
+          "SystemAssignedUserAssigned",
+          "None"
+        ],
+        "type": "String",
+        "metadata": {
+          "description": "The MSI Identity that is associated with this resource."
+        }
+      },
+      "allowPublicAccess": {
+        "defaultValue": true,
+        "type": "Bool",
+        "metadata": {
+          "description": "Set to true for endpoints that should allow public access when Private Link is enabled."
+        }
+      },
+      "authMode": {
+        "defaultValue": "Key",
+        "allowedValues": [
+          "AMLToken",
+          "Key",
+          "AADToken"
+        ],
+        "type": "String"
+      },
+      "appInsightsEnabled": {
+        "defaultValue": false,
+        "type": "Bool"
+      },
+      "instanceType": {
+        "defaultValue": "defaultinstance",
+        "type": "String",
+        "metadata": {
+          "description": "The name of the instanceType. Ex - P3. It is typically a letter+number code"
+        }
+      }
+    },
+    "variables": {
+      "endpointResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/onlineEndpoints',parameters('workspaceName'), parameters('onlineEndpointName'))]",
+      "computeResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/computes',parameters('workspaceName'), parameters('computeName'))]",
+      "envName": "[concat( parameters('computeName'),'-',parameters('onlineEndpointName'))]",
+      "envResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/environments/versions',parameters('workspaceName'),variables('envName'),'1')]",
+      "deployment": "[parameters('model')]"
+    },
+    "resources": {
+      "compute": {
+        "type": "Microsoft.MachineLearningServices/workspaces/computes",
+        "apiVersion": "2021-01-01",
+        "name": "[concat(parameters('workspaceName'), '/', parameters('computeName'))]",
+        "location": "[parameters('location')]",
+        "identity": {
+          "type": "[parameters('identityType')]"
+        },
+        "properties": {
+          "computeType": "Kubernetes",
+          "resourceId": "[parameters('clusterArmId')]",
+          "computeLocation": "eastus",
+          "properties": {
+            "defaultInstanceType": "defaultinstance",
+            "instanceTypes": {
+              "defaultinstance": {
+                "resources": {
+                  "limits": {
+                    "cpu": "5",
+                    "memory": "18Gi",
+                    "nvidia.com/gpu": "1"
+                  },
+                  "requests": {
+                    "cpu": "4",
+                    "memory": "16Gi"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "endpoint": {
+        "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints",
+        "apiVersion": "2022-05-01",
+        "name": "[concat(parameters('workspaceName'), '/', parameters('onlineEndpointName'))]",
+        "location": "[parameters('location')]",
+        "dependsOn": [
+          "compute"
+        ],
+        "identity": {
+          "type": "[parameters('identityType')]"
+        },
+        "properties": {
+          "authMode": "[parameters('authMode')]",
+          "description": "[parameters('description')]",
+          "compute": "[variables('computeResourceId')]",
+          "traffic": {
+            "[variables('deployment')]": 100
+          }
+        }
+      },
+      "setendpointrole": {
+        "type": "Microsoft.Authorization/roleAssignments",
+        "apiVersion": "2022-04-01",
+        "name": "[guid('endpoint', 'AcrPull')]",
+        "dependsOn": [
+          "endpoint"
+        ],
+        "properties": {
+          "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '7f951dda-4ed3-4680-a7ca-43fe172d538d')]",
+          "principalId": "[reference(variables('endpointResourceId'), '2022-05-01', 'Full').identity.principalId]"
+        },
+        "scope": "/subscriptions/639e272b-262a-4cf2-ad26-7b801303b811/resourceGroups/EDGECI-REGISTRATION-rr1s46r06b1-HeXixrPm/providers/Microsoft.ContainerRegistry/registries/kaitok8s"
+      },
+      "env": {
+        "type": "Microsoft.MachineLearningServices/workspaces/environments/versions",
+        "apiVersion": "2024-07-01-preview",
+        "name": "[concat(parameters('workspaceName'), '/', parameters('computeName'),'-',parameters('onlineEndpointName'), '/1')]",
+        "dependsOn": [
+          "setendpointrole"
+        ],
+        "properties": {
+          "image": "[if(equals(parameters('model'), 'yolof'), 'kaitok8s.azurecr.io/yolof-cpu:5', 'kaitok8s.azurecr.io/whisper:5')]",
+          "inferenceConfig": {
+            "livenessRoute": {
+              "path": "/",
+              "port": 5001
+            },
+            "readinessRoute": {
+              "path": "/",
+              "port": 5001
+            },
+            "scoringRoute": {
+              "path": "/score",
+              "port": 5001
+            }
+          }
+        }
+      },
+      "deploy": {
+        "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments",
+        "apiVersion": "2022-05-01",
+        "name": "[concat(parameters('workspaceName'), '/', parameters('onlineEndpointName'),'/', parameters('model'))]",
+        "location": "[parameters('location')]",
+        "dependsOn": [
+          "env"
+        ],
+        "properties": {
+          "description": "[parameters('description')]",
+          "appInsightsEnabled": "[parameters('appInsightsEnabled')]",
+          "endpointComputeType": "Kubernetes",
+          "instanceType": "k8s-instance",
+          "requestSettings": {
+            "requestTimeout": "PT20S"
+          },
+          "environmentId": "[variables('envResourceId')]",
+          "properties": {}
+        }
+      }
+    }
+  }
