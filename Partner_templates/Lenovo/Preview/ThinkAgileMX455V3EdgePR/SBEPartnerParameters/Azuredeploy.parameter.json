@@ -56,12 +56,6 @@
       "arbDeploymentAppSecret": {
         "value": ""
       },
-      "arbDeploymentSPNObjectID": {
-        "value": ""
-      },
-      "hciResourceProviderObjectID": {
-          "value": ""
-      },
       "arcNodeResourceIds": {
         "value": []
       },

@@ -135,20 +135,6 @@
                 "description": "ARB SPN's Password"
             }
         },
-        "arbDeploymentSPNObjectID": {
-            "type": "string",
-            "minLength": 1,
-            "metadata": {
-                "description": "ARB SPN's ObjectID"
-            }
-        },
-        "hciResourceProviderObjectID": {
-            "type": "string",
-            "minLength": 1,
-            "metadata": {
-                "description": "Object ID of HCI Resource Provider"
-            }
-        },
         "arcNodeResourceIds": {
             "defaultValue": [],
             "type": "array",
