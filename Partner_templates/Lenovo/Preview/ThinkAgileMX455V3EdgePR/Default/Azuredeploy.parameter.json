@@ -211,27 +211,6 @@
       },
       "customLocation": {
         "value": ""
-      },
-      "sbeVersion":{
-        "value": ""
-      },
-      "sbeFamily":{
-        "value": "MX455V3"
-      },
-      "sbePublisher":{
-        "value": "Lenovo"
-      },
-      "sbeManifestSource":{
-        "value": "default"
-      },
-      "sbeManifestCreationDate":{
-        "value": ""
-      },
-      "partnerCredentiallist": {
-        "value": []
-      },
-      "partnerProperties": {
-        "value":[]
       }
     }
   }
