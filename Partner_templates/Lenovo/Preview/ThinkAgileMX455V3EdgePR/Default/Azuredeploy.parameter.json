@@ -6,7 +6,7 @@
         "value": "2024-02-15-preview"
       },
       "deploymentMode": {
-        "value": "Validate"
+        "value": ""
       },
       "keyVaultName": {
         "value": ""
@@ -30,7 +30,7 @@
         "value": ""
       },
       "tenantId": {
-        "value": "e62fcd7c-a480-41cf-8ef9-92e409a0e576"
+        "value": ""
       },
       "witnessType": {
         "value": "Cloud"
@@ -141,10 +141,7 @@
               "Compute",
               "Management"
             ],
-            "adapter": [
-              "Port1",
-              "Port2"
-            ],
+            "adapter": [],
             "overrideVirtualSwitchConfiguration": false,
             "virtualSwitchConfigurationOverrides": {
               "enableIov": "",
@@ -156,11 +153,11 @@
               "priorityValue8021Action_SMB": "3",
               "bandwidthPercentage_SMB": "50"
             },
-            "overrideAdapterProperty": true,
+            "overrideAdapterProperty": false,
             "adapterPropertyOverrides": {
               "jumboPacket": "1514",
               "networkDirect": "Disabled",
-              "networkDirectTechnology": "iWARP"
+              "networkDirectTechnology": ""
             }
           },
           {
@@ -168,10 +165,7 @@
               "trafficType": [
                   "Storage"
               ],
-              "adapter": [
-                  "Port3",
-                  "Port4"
-              ],
+              "adapter": [],
               "overrideVirtualSwitchConfiguration": false,
               "virtualSwitchConfigurationOverrides": {
                   "enableIov": "",
@@ -187,7 +181,7 @@
               "adapterPropertyOverrides": {
                   "jumboPacket": "9014",
                   "networkDirect": "Enabled",
-                  "networkDirectTechnology": "RoCEv2"
+                  "networkDirectTechnology": ""
               }
           }
         ]
@@ -196,12 +190,12 @@
         "value": [
           {
             "name": "Storage1Network",
-            "networkAdapterName": "Port3",
+            "networkAdapterName": "",
             "vlanId": "711"
           },
           {
             "name": "Storage2Network",
-            "networkAdapterName": "Port4",
+            "networkAdapterName": "",
             "vlanId": "712"
           }
         ]
@@ -211,6 +205,27 @@
       },
       "customLocation": {
         "value": ""
+      },
+      "sbeVersion":{
+        "value": ""
+      },
+      "sbeFamily":{
+        "value": "MX455V3"
+      },
+      "sbePublisher":{
+        "value": "Lenovo"
+      },
+      "sbeManifestSource":{
+        "value": "default"
+      },
+      "sbeManifestCreationDate":{
+        "value": ""
+      },
+      "partnerCredentiallist": {
+        "value": []
+      },
+      "partnerProperties": {
+        "value":[]
       }
     }
   }
