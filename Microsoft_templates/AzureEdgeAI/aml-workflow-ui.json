@@ -235,17 +235,17 @@
                                             },
                                             {
                                                 "label": "Mistral (Chat Completion) - GPU",
-                                                "description": "High-performing language model offering state-of-the-art text generation and comprehension. Optimized to run on GPU devices. Minimum inference sku spec - 12|1|220|64",
+                                                "description": "High-performing language model offering state-of-the-art text generation and comprehension. Optimized to run on GPU devices. Minimum inference sku spec - 4|1|16|32",
                                                 "value": "mistralgpu"
                                             },
                                             {
                                                 "label": "Phi 3.5 (Chat Completion) - GPU",
-                                                "description": "Lightweight, state-of-the-art language model with a focus on very high-quality, reasoning dense data, ideal for edge devices. Optimized to run on GPU devices. Minimum inference sku spec - 24|1|220|64",
+                                                "description": "Lightweight, state-of-the-art language model with a focus on very high-quality, reasoning dense data, ideal for edge devices. Optimized to run on GPU devices. Minimum inference sku spec - 4|1|16|32",
                                                 "value": "phi35gpu"
                                             },
                                             {
                                                 "label": "Whisper (Speech Recognition) - CPU",
-                                                "description": "Whisper is a state-of-the-art model for automatic speech recognition (ASR) and speech translation. Minimum inference sku spec - 6|0|56|112",
+                                                "description": "Whisper is a state-of-the-art model for automatic speech recognition (ASR) and speech translation. Minimum inference sku spec - 6|0|16|112",
                                                 "value": "whisper"
                                             },
                                             {
@@ -291,7 +291,7 @@
                                 {
                                     "name": "requestCpu",
                                     "type": "Microsoft.Common.TextBox",
-                                    "label": "CPU request",
+                                    "label": "CPU instances",
                                     "placeholder": "[if(equals(steps('configuration').model.modelName, 'phi35cpu'), 4, if(equals(steps('configuration').model.modelName, 'mistralcpu'), 4, if(equals(steps('configuration').model.modelName, 't5'), 4, if(equals(steps('configuration').model.modelName, 'yolof'), 4, 5))))]",
                                     "toolTip": "Set CPU for the pod running the model.",
                                     "constraints": {
@@ -325,7 +325,7 @@
                                 {
                                     "name": "requestMemory",
                                     "type": "Microsoft.Common.TextBox",
-                                    "label": "Memory request",
+                                    "label": "Memory instances",
                                     "placeholder": "[if(equals(steps('configuration').model.modelName, 'phi35cpu'), 14, if(equals(steps('configuration').model.modelName, 'mistralcpu'), 14, if(equals(steps('configuration').model.modelName, 't5'), 16, if(equals(steps('configuration').model.modelName, 'yolof'), 14, 16))))]",
                                     "toolTip": "Set memory for the pod running the model.",
                                     "constraints": {
@@ -416,6 +416,7 @@
                                     "name": "nodeselectorkey",
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Name",
+                                    "toolTip": "Specify which node a pod should run on. The node must have a corresponding label. Provide input as key-value pair.",
                                     "visible": true
                                 },
                                 {
@@ -433,13 +434,6 @@
                             "visible": true,
                             "elements": [
                                 {
-                                    "name": "applicationDiagnostics",
-                                    "type": "Microsoft.Common.CheckBox",
-                                    "label": "Application insights diagnostics",
-                                    "toolTip": "Azure Machine Learning uses integration with Azure Monitor to track and monitor metrics and logs for online endpoints.",
-                                    "visible": true
-                                },
-                                {
                                     "name": "autoscaling",
                                     "type": "Microsoft.Common.CheckBox",
                                     "label": "Auto-scale enabled",
@@ -451,13 +445,13 @@
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Minimum Instance count",
                                     "placeholder": "Please input the minimum instance count",
-                                    "toolTip": "The number of minimum instances to use for the deployment.",
+                                    "toolTip": "The minimum number of instances to use when autoscaling this deployment.",
                                     "constraints": {
                                         "required": "[steps('configuration').advanced.autoscaling]",
                                         "validations": [
                                             {
                                                 "regex": "^(?:[1-9]|[1-4][0-9]|50)$",
-                                                "message": "Should be a valid number. Maximum instance count allowed is 50"
+                                                "message": "Should be a valid number between 1 and 50"
                                             }
                                         ]
                                     },
@@ -468,13 +462,13 @@
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Maximum Instance count",
                                     "placeholder": "Please input the maximum instance count",
-                                    "toolTip": "The number of maximum instances to use for the deployment.",
+                                    "toolTip": "The maximum number of instances to use when autoscaling this deployment.",
                                     "constraints": {
                                         "required": "[steps('configuration').advanced.autoscaling]",
                                         "validations": [
                                             {
                                                 "regex": "^(?:[1-9]|[1-4][0-9]|50)$",
-                                                "message": "Should be a valid number. Maximum instance count allowed is 50"
+                                                "message": "Should be a valid number between 1 and 50"
                                             }
                                         ]
                                     },
@@ -485,7 +479,7 @@
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Polling Interval(in seconds)",
                                     "placeholder": "Please input the polling interval in seconds",
-                                    "toolTip": "",
+                                    "toolTip": "The frequency at which the autoscaler checks the current load and adjusts the scaling.",
                                     "constraints": {
                                         "required": "[steps('configuration').advanced.autoscaling]",
                                         "validations": [
@@ -501,9 +495,9 @@
                                     "name": "targetUtilizationPercentage",
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Target Utilization Percentage (%)",
-                                    "placeholder": "Please input the percentage of Target Utilization ",
+                                    "placeholder": "Please input the percentage of Target Utilization",
                                     "defaultValue": "70",
-                                    "toolTip": "",
+                                    "toolTip": "Target CPU usage for the autoscaler.",
                                     "constraints": {
                                         "required": "[steps('configuration').advanced.autoscaling]",
                                         "validations": [
@@ -552,7 +546,6 @@
                 "requestMemory": "[steps('configuration').compute.requestMemory]",
                 "scoringTimeout": "[steps('configuration').traffic.scoringTimeout]",
                 "trafficAllocation": "[steps('configuration').traffic.trafficAllocation]",
-                "applicationDiagnostics": "[steps('configuration').advanced.applicationDiagnostics]",
                 "autoscaling": "[steps('configuration').advanced.autoscaling]",
                 "minInstances": "[steps('configuration').advanced.minInstances]",
                 "maxInstances": "[steps('configuration').advanced.maxInstances]",

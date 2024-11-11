@@ -61,10 +61,6 @@
       ],
       "type": "String"
     },
-    "applicationDiagnostics": {
-      "defaultValue": false,
-      "type": "Bool"
-    },
     "autoscaling": {
       "defaultValue": false,
       "type": "Bool"
@@ -183,7 +179,7 @@
       }
     },
     "phi35gpu": {
-      "imageUrl": "mcr.microsoft.com/azureedgeai/models/gpu/phi35-mini-instruct:0.0.1",
+      "imageUrl": "mcr.microsoft.com/azureedgeai/models/gpu/phi35-mini-instruct-onnx:0.0.1",
       "inferenceConfig": {
         "livenessRoute": {
           "path": "/",
@@ -234,7 +230,7 @@
       }
     },
     "mistralgpu": {
-      "imageUrl": "mcr.microsoft.com/azureedgeai/models/gpu/mistral-7b-v02:0.0.1",
+      "imageUrl": "mcr.microsoft.com/azureedgeai/models/gpu/mistral-7b-v02-onnx:0.0.1",
       "inferenceConfig": {
         "livenessRoute": {
           "path": "/",
@@ -430,7 +426,6 @@
       ],
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments'), parameters('tagsByResource')['Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments'], createObject())]",
       "properties": {
-        "appInsightsEnabled": "[parameters('applicationDiagnostics')]",
         "endpointComputeType": "Kubernetes",
         "instanceType": "defaultinstance",
         "requestSettings": {
