@@ -224,7 +224,7 @@
                                     "constraints": {
                                         "allowedValues": [
                                             {
-                                                "label": "Phi 3.5 (Chat Completion) - CPU",
+                                                "label": "Phi 3.5 mini instruct (Chat Completion) - CPU",
                                                 "description": "Lightweight, state-of-the-art language model with a focus on very high-quality, reasoning dense data, ideal for edge devices. Optimized to run with ONNX runtime on CPU devices. Minimum inference sku spec - 4|0|14|28",
                                                 "value": "phi35cpu"
                                             },
@@ -235,12 +235,12 @@
                                             },
                                             {
                                                 "label": "Mistral (Chat Completion) - GPU",
-                                                "description": "High-performing language model offering state-of-the-art text generation and comprehension. Optimized to run on GPU devices. Minimum inference sku spec - 4|1|16|32",
+                                                "description": "High-performing language model offering state-of-the-art text generation and comprehension. Optimized to run with ONNX runtime on GPU devices. Minimum inference sku spec - 4|1|16|32",
                                                 "value": "mistralgpu"
                                             },
                                             {
-                                                "label": "Phi 3.5 (Chat Completion) - GPU",
-                                                "description": "Lightweight, state-of-the-art language model with a focus on very high-quality, reasoning dense data, ideal for edge devices. Optimized to run on GPU devices. Minimum inference sku spec - 4|1|16|32",
+                                                "label": "Phi 3.5 mini instruct (Chat Completion) - GPU",
+                                                "description": "Lightweight, state-of-the-art language model with a focus on very high-quality, reasoning dense data, ideal for edge devices. Optimized to run with ONNX runtime on GPU devices. Minimum inference sku spec - 4|1|16|32",
                                                 "value": "phi35gpu"
                                             },
                                             {
@@ -325,7 +325,7 @@
                                 {
                                     "name": "requestMemory",
                                     "type": "Microsoft.Common.TextBox",
-                                    "label": "Memory instances",
+                                    "label": "Memory instances (Gi)",
                                     "placeholder": "[if(equals(steps('configuration').model.modelName, 'phi35cpu'), 14, if(equals(steps('configuration').model.modelName, 'mistralcpu'), 14, if(equals(steps('configuration').model.modelName, 't5'), 16, if(equals(steps('configuration').model.modelName, 'yolof'), 14, 16))))]",
                                     "toolTip": "Set memory for the pod running the model.",
                                     "constraints": {
@@ -336,7 +336,7 @@
                                 {
                                     "name": "limitMemory",
                                     "type": "Microsoft.Common.TextBox",
-                                    "label": "Memory limit",
+                                    "label": "Memory limit (Gi)",
                                     "placeholder": "",
                                     "toolTip": "Set memory resource limit for the pod running the model.",
                                     "constraints": {

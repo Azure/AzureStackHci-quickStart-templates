@@ -374,12 +374,12 @@
               "resources": {
                 "limits": {
                   "cpu": "[parameters('limitCpu')]",
-                  "memory": "[parameters('limitMemory')]",
+                  "memory": "[concat(parameters('requestMemory'),'Gi')]",
                   "nvidia.com/gpu": "[if(greater(length(parameters('limitGpu')), 0), parameters('limitGpu'), json('null'))]"
                 },
                 "requests": {
                   "cpu": "[parameters('requestCpu')]",
-                  "memory": "[parameters('requestMemory')]"
+                  "memory": "[concat(parameters('requestMemory'),'Gi')]"
                 }
               }
             }
