@@ -1,0 +1,475 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "name": "Deploy AI model",
+  "parameters": {
+    "aksCluster": {
+      "type": "String",
+      "metadata": {
+        "description": "Specifies the armid of the cluster."
+      }
+    },
+    "endpointLink": {
+      "type": "String",
+      "metadata": {
+        "description": ""
+      }
+    },
+    "location": {
+      "defaultValue": "[resourceGroup().location]",
+      "type": "String",
+      "metadata": {
+        "description": "The location of the Azure Machine Learning components."
+      }
+    },
+    "amlWorkspace": {
+      "type": "String"
+    },
+    "deployNewWorkspace": {
+      "type": "String"
+    },
+    "modelName": {
+      "type": "String"
+    },
+    "instanceCount": {
+      "type": "String"
+    },
+    "limitCpu": {
+      "type": "String"
+    },
+    "limitMemory": {
+      "type": "String"
+    },
+    "limitGpu": {
+      "type": "String",
+      "defaultValue": ""
+    },
+    "requestCpu": {
+      "type": "String"
+    },
+    "requestMemory": {
+      "type": "String"
+    },
+    "trafficAllocation": {
+      "type": "String"
+    },
+    "authenticationType": {
+      "defaultValue": "Key",
+      "allowedValues": [
+        "AMLToken",
+        "Key"
+      ],
+      "type": "String"
+    },
+    "autoscaling": {
+      "defaultValue": false,
+      "type": "Bool"
+    },
+    "maxInstances": {
+      "type": "String",
+      "defaultValue": ""
+    },
+    "minInstances": {
+      "type": "String",
+      "defaultValue": ""
+    },
+    "pollingInterval": {
+      "type": "String",
+      "defaultValue": ""
+    },
+    "targetUtilizationPercentage": {
+      "type": "String",
+      "defaultValue": ""
+    },
+    "nodeselectorkey": {
+      "type": "String",
+      "defaultValue": ""
+    },
+    "nodeselectorvalue": {
+      "type": "String",
+      "defaultValue": ""
+    },
+    "scoringTimeout": {
+      "type": "String"
+    },
+    "compute": {
+      "type": "String",
+      "defaultValue": "[substring(guid(utcNow()),0,4)]"
+    },
+    "tagsByResource": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Tags to be applied to the resources"
+      }
+    }
+  },
+  "variables": {
+    "storageAccountName": "[substring(concat('sa',uniqueString(resourceGroup().id, deployment().name)),0,7)]",
+    "storageAccountType": "Standard_LRS",
+    "keyVaultName": "[substring(concat('kv',uniqueString(resourceGroup().id), deployment().name),0,7)]",
+    "tenantId": "[subscription().tenantId]",
+    "applicationInsightsName": "[substring(concat('ai',uniqueString(resourceGroup().id, deployment().name)),0,7)]",
+    "containerRegistryName": "[substring(concat('cr',uniqueString(resourceGroup().id, deployment().name )),0,7)]",
+    "endpointResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/onlineEndpoints',parameters('amlWorkspace'), parameters('endpointLink'))]",
+    "computeName": "[concat('compute-',parameters('compute'))]",
+    "computeResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/computes',parameters('amlWorkspace'),variables('computeName'))]",
+    "envName": "[concat(variables('computeName'),'-env')]",
+    "envResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/environments/versions',parameters('amlWorkspace'),variables('envName'),'1')]",
+    "deployment": "[concat(variables('computeName'),'-',parameters('modelName'))]",
+    "scaleSettings": {
+      "scaleType": "TargetUtilization",
+      "maxInstances": "[if(greater(length(parameters('maxInstances')), 0), parameters('maxInstances'), json('null'))]",
+      "minInstances": "[if(greater(length(parameters('minInstances')), 0), parameters('minInstances'), json('null'))]",
+      "pollingInterval": "[if(greater(length(parameters('pollingInterval')), 0),concat('PT',parameters('pollingInterval'),'S'), json('null'))]",
+      "targetUtilizationPercentage": "[if(greater(length(parameters('targetUtilizationPercentage')), 0), parameters('targetUtilizationPercentage'), json('null'))]"
+    },
+    "nodeselector": {
+      "[parameters('nodeselectorkey')]": "[parameters('nodeselectorvalue')]"
+    },
+    "yolof": {
+      "imageUrl": "mcr.microsoft.com/azureedgeai/models/cpu/mmd-3x-yolof_r50_c5_8x8_1x_coco:0.0.1",
+      "inferenceConfig": {
+        "livenessRoute": {
+          "path": "/",
+          "port": 5001
+        },
+        "readinessRoute": {
+          "path": "/",
+          "port": 5001
+        },
+        "scoringRoute": {
+          "path": "/score",
+          "port": 5001
+        }
+      }
+    },
+    "whisper": {
+      "imageUrl": "mcr.microsoft.com/azureedgeai/models/cpu/whisper-large:0.0.1",
+      "inferenceConfig": {
+        "livenessRoute": {
+          "path": "/",
+          "port": 5001
+        },
+        "readinessRoute": {
+          "path": "/",
+          "port": 5001
+        },
+        "scoringRoute": {
+          "path": "/score",
+          "port": 5001
+        }
+      }
+    },
+    "t5": {
+      "imageUrl": "mcr.microsoft.com/azureedgeai/models/cpu/t5-base:0.0.2",
+      "inferenceConfig": {
+        "livenessRoute": {
+          "path": "/",
+          "port": 5001
+        },
+        "readinessRoute": {
+          "path": "/",
+          "port": 5001
+        },
+        "scoringRoute": {
+          "path": "/score",
+          "port": 5001
+        }
+      }
+    },
+    "phi35gpu": {
+      "imageUrl": "mcr.microsoft.com/azureedgeai/models/gpu/phi35-mini-instruct-onnx:0.0.1",
+      "inferenceConfig": {
+        "livenessRoute": {
+          "path": "/",
+          "port": 5001
+        },
+        "readinessRoute": {
+          "path": "/",
+          "port": 5001
+        },
+        "scoringRoute": {
+          "path": "/score",
+          "port": 5001
+        }
+      }
+    },
+    "phi35cpu": {
+      "imageUrl": "mcr.microsoft.com/azureedgeai/models/cpu/phi35-mini-instruct-onnx:0.0.1",
+      "inferenceConfig": {
+        "livenessRoute": {
+          "path": "/",
+          "port": 5001
+        },
+        "readinessRoute": {
+          "path": "/",
+          "port": 5001
+        },
+        "scoringRoute": {
+          "path": "/score",
+          "port": 5001
+        }
+      }
+    },
+    "mistralcpu": {
+      "imageUrl": "mcr.microsoft.com/azureedgeai/models/cpu/mistral-7b-v02-onnx:0.0.1",
+      "inferenceConfig": {
+        "livenessRoute": {
+          "path": "/",
+          "port": 5001
+        },
+        "readinessRoute": {
+          "path": "/",
+          "port": 5001
+        },
+        "scoringRoute": {
+          "path": "/score",
+          "port": 5001
+        }
+      }
+    },
+    "mistralgpu": {
+      "imageUrl": "mcr.microsoft.com/azureedgeai/models/gpu/mistral-7b-v02-onnx:0.0.1",
+      "inferenceConfig": {
+        "livenessRoute": {
+          "path": "/",
+          "port": 5001
+        },
+        "readinessRoute": {
+          "path": "/",
+          "port": 5001
+        },
+        "scoringRoute": {
+          "path": "/score",
+          "port": 5001
+        }
+      }
+    }
+  },
+  "resources": [
+    {
+      "condition": "[equals(parameters('deployNewWorkspace'),'create')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2023-05-01",
+      "name": "[variables('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "encryption": {
+          "services": {
+            "blob": {
+              "keyType": "Account",
+              "enabled": true
+            },
+            "file": {
+              "keyType": "Account",
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        },
+        "supportsHttpsTrafficOnly": true,
+        "minimumTlsVersion": "TLS1_2",
+        "allowBlobPublicAccess": false,
+        "accessTier": "Hot",
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [],
+          "ipRules": [],
+          "defaultAction": "Allow"
+        }
+      }
+    },
+    {
+      "condition": "[equals(parameters('deployNewWorkspace'),'create')]",
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2023-07-01",
+      "name": "[variables('keyVaultName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "tenantId": "[variables('tenantId')]",
+        "sku": {
+          "name": "standard",
+          "family": "A"
+        },
+        "accessPolicies": [],
+        "enabledForDeployment": false,
+        "enableSoftDelete": true
+      }
+    },
+    {
+      "condition": "[equals(parameters('deployNewWorkspace'),'create')]",
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2020-02-02",
+      "name": "[variables('applicationInsightsName')]",
+      "location": "[parameters('location')]",
+      "kind": "web",
+      "properties": {
+        "Application_Type": "web",
+        "RetentionInDays": 90
+      }
+    },
+    {
+      "condition": "[equals(parameters('deployNewWorkspace'),'create')]",
+      "type": "Microsoft.ContainerRegistry/registries",
+      "apiVersion": "2023-01-01-preview",
+      "name": "[variables('containerRegistryName')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "location": "[parameters('location')]",
+      "properties": {
+        "adminUserEnabled": false
+      }
+    },
+    {
+      "condition": "[equals(parameters('deployNewWorkspace'),'create')]",
+      "type": "Microsoft.MachineLearningServices/workspaces",
+      "apiVersion": "2024-07-01-preview",
+      "name": "[parameters('amlWorkspace')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+        "[resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))]",
+        "[resourceId('Microsoft.ContainerRegistry/registries', variables('containerRegistryName'))]"
+      ],
+      "location": "[parameters('location')]",
+      "properties": {
+        "friendlyName": "[parameters('amlWorkspace')]",
+        "keyVault": "[resourceId('Microsoft.KeyVault/vaults',variables('keyVaultName'))]",
+        "applicationInsights": "[resourceId('Microsoft.Insights/components',variables('applicationInsightsName'))]",
+        "containerRegistry": "[resourceId('Microsoft.ContainerRegistry/registries',variables('containerRegistryName'))]",
+        "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts/',variables('storageAccountName'))]"
+      }
+    },
+    {
+      "type": "Microsoft.MachineLearningServices/workspaces/computes",
+      "apiVersion": "2021-01-01",
+      "name": "[concat(parameters('amlWorkspace'),'/',variables('computeName'))]",
+      "location": "[parameters('location')]",
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.MachineLearningServices/workspaces/computes'), parameters('tagsByResource')['Microsoft.MachineLearningServices/workspaces/computes'], createObject())]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('amlWorkspace'))]"
+      ],
+      "properties": {
+        "computeType": "Kubernetes",
+        "resourceId": "[parameters('aksCluster')]",
+        "computeLocation": "[parameters('location')]",
+        "properties": {
+          "defaultInstanceType": "defaultinstance",
+          "instanceTypes": {
+            "defaultinstance": {
+              "nodeSelector": "[if(greater(length(parameters('nodeselectorkey')),0), variables('nodeselector'), json('null'))]",
+              "resources": {
+                "limits": {
+                  "cpu": "[parameters('limitCpu')]",
+                  "memory": "[concat(parameters('requestMemory'),'Gi')]",
+                  "nvidia.com/gpu": "[if(greater(length(parameters('limitGpu')), 0), parameters('limitGpu'), json('null'))]"
+                },
+                "requests": {
+                  "cpu": "[parameters('requestCpu')]",
+                  "memory": "[concat(parameters('requestMemory'),'Gi')]"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints",
+      "apiVersion": "2022-05-01",
+      "name": "[concat(parameters('amlWorkspace'), '/', parameters('endpointLink'))]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.MachineLearningServices/workspaces/computes',parameters('amlWorkspace'), variables('computeName'))]"
+      ],
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.MachineLearningServices/workspaces/onlineEndpoints'), parameters('tagsByResource')['Microsoft.MachineLearningServices/workspaces/onlineEndpoints'], createObject())]",
+      "properties": {
+        "authMode": "[parameters('authenticationType')]",
+        "compute": "[variables('computeResourceId')]"
+      }
+    },
+    {
+      "type": "Microsoft.MachineLearningServices/workspaces/environments/versions",
+      "apiVersion": "2024-07-01-preview",
+      "name": "[concat(parameters('amlWorkspace'), '/',variables('envName'), '/1')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.MachineLearningServices/workspaces/onlineEndpoints', parameters('amlWorkspace'), parameters('endpointLink'))]"
+      ],
+      "properties": {
+        "image": "[variables(parameters('modelName')).imageUrl]",
+        "inferenceConfig": "[variables(parameters('modelName')).inferenceConfig]"
+      }
+    },
+    {
+      "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments",
+      "apiVersion": "2022-05-01",
+      "name": "[concat(parameters('amlWorkspace'), '/', parameters('endpointLink'),'/', variables('deployment'))]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.MachineLearningServices/workspaces/environments/versions', parameters('amlWorkspace'), variables('envName'), '1')]"
+      ],
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments'), parameters('tagsByResource')['Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments'], createObject())]",
+      "properties": {
+        "endpointComputeType": "Kubernetes",
+        "instanceType": "defaultinstance",
+        "requestSettings": {
+          "requestTimeout": "[concat('PT',parameters('scoringTimeout'),'S')]"
+        },
+        "scaleSettings": "[if(equals(parameters('autoscaling'), true()), variables('scaleSettings'), json('null'))]",
+        "environmentId": "[variables('envResourceId')]",
+        "properties": {}
+      }
+    },
+    {
+      "apiVersion": "2020-06-01",
+      "type": "Microsoft.Resources/deployments",
+      "name": "updateOnlineEndpoint",
+      "dependsOn": [
+        "[resourceId('Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments', parameters('amlWorkspace'), parameters('endpointLink'), variables('deployment'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.1",
+          "resources": [
+            {
+              "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints",
+              "apiVersion": "2022-05-01",
+              "name": "[concat(parameters('amlWorkspace'), '/', parameters('endpointLink'))]",
+              "location": "[parameters('location')]",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.MachineLearningServices/workspaces/onlineEndpoints'), parameters('tagsByResource')['Microsoft.MachineLearningServices/workspaces/onlineEndpoints'], createObject())]",
+              "properties": {
+                "authMode": "[parameters('authenticationType')]",
+                "compute": "[variables('computeResourceId')]",
+                "traffic": {
+                  "[variables('deployment')]": "[parameters('trafficAllocation')]"
+                }
+              }
+            }
+          ],
+          "outputs": {}
+        }
+      }
+    }
+  ]
+}
