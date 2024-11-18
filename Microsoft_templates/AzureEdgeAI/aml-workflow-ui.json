@@ -292,7 +292,7 @@
                                     "name": "requestCpu",
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "CPU instances",
-                                    "placeholder": "[if(equals(steps('configuration').model.modelName, 'phi35cpu'), 4, if(equals(steps('configuration').model.modelName, 'mistralcpu'), 4, if(equals(steps('configuration').model.modelName, 't5'), 4, if(equals(steps('configuration').model.modelName, 'yolof'), 4, 5))))]",
+                                    "placeholder": "[if(endsWith(steps('configuration').model.modelName, 'cpu'), 4, if(equals(steps('configuration').model.modelName, 'whisper'), 4, if(equals(steps('configuration').model.modelName, 't5'), 4, if(equals(steps('configuration').model.modelName, 'yolof'), 4, 8))))]",
                                     "toolTip": "Set CPU for the pod running the model.",
                                     "constraints": {
                                         "required": true,
@@ -325,8 +325,8 @@
                                 {
                                     "name": "requestMemory",
                                     "type": "Microsoft.Common.TextBox",
-                                    "label": "Memory instances (Gi)",
-                                    "placeholder": "[if(equals(steps('configuration').model.modelName, 'phi35cpu'), 14, if(equals(steps('configuration').model.modelName, 'mistralcpu'), 14, if(equals(steps('configuration').model.modelName, 't5'), 16, if(equals(steps('configuration').model.modelName, 'yolof'), 14, 16))))]",
+                                    "label": "Memory instances (in GiB)",
+                                    "placeholder": "[if(endsWith(steps('configuration').model.modelName, 'cpu'), 16, if(equals(steps('configuration').model.modelName, 'whisper'), 14, if(equals(steps('configuration').model.modelName, 't5'), 16, if(equals(steps('configuration').model.modelName, 'yolof'), 14, 28))))]",
                                     "toolTip": "Set memory for the pod running the model.",
                                     "constraints": {
                                         "required": true
@@ -336,7 +336,7 @@
                                 {
                                     "name": "limitMemory",
                                     "type": "Microsoft.Common.TextBox",
-                                    "label": "Memory limit (Gi)",
+                                    "label": "Memory limit (in GiB)",
                                     "placeholder": "",
                                     "toolTip": "Set memory resource limit for the pod running the model.",
                                     "constraints": {
@@ -417,13 +417,19 @@
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Name",
                                     "toolTip": "Specify which node a pod should run on. The node must have a corresponding label. Provide input as key-value pair.",
-                                    "visible": true
+                                    "visible": true,
+                                    "constraints": {
+                                        "required": "[greater(length(steps('configuration').nodeselector.nodeselectorvalue),0)]"
+                                    }
                                 },
                                 {
                                     "name": "nodeselectorvalue",
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Value",
-                                    "visible": true
+                                    "visible": true,
+                                    "constraints": {
+                                        "required": "[greater(length(steps('configuration').nodeselector.nodeselectorkey),0)]"
+                                    }
                                 }
                             ]
                         },
