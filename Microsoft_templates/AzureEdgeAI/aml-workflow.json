@@ -162,7 +162,7 @@
       }
     },
     "t5": {
-      "imageUrl": "mcr.microsoft.com/azureedgeai/models/cpu/t5-base:0.0.2",
+      "imageUrl": "mcr.microsoft.com/azureedgeai/models/cpu/t5-base:0.0.3",
       "inferenceConfig": {
         "livenessRoute": {
           "path": "/",
@@ -179,14 +179,14 @@
       }
     },
     "phi35gpu": {
-      "imageUrl": "mcr.microsoft.com/azureedgeai/models/gpu/phi35-mini-instruct-onnx:0.0.1",
+      "imageUrl": "mcr.microsoft.com/azureedgeai/models/gpu/phi35-mini-instruct:0.0.1",
       "inferenceConfig": {
         "livenessRoute": {
-          "path": "/",
+          "path": "/health",
           "port": 5001
         },
         "readinessRoute": {
-          "path": "/",
+          "path": "/health",
           "port": 5001
         },
         "scoringRoute": {
@@ -196,48 +196,48 @@
       }
     },
     "phi35cpu": {
-      "imageUrl": "mcr.microsoft.com/azureedgeai/models/cpu/phi35-mini-instruct-onnx:0.0.1",
+      "imageUrl": "mcr.microsoft.com/azureedgeai/models/cpu/phi35-mini-instruct:0.0.1",
       "inferenceConfig": {
         "livenessRoute": {
           "path": "/",
-          "port": 5001
+          "port": 31311
         },
         "readinessRoute": {
           "path": "/",
-          "port": 5001
+          "port": 31311
         },
         "scoringRoute": {
           "path": "/score",
-          "port": 5001
+          "port": 31311
         }
       }
     },
     "mistralcpu": {
-      "imageUrl": "mcr.microsoft.com/azureedgeai/models/cpu/mistral-7b-v02-onnx:0.0.1",
+      "imageUrl": "mcr.microsoft.com/azureedgeai/models/cpu/mistral-7b-v02:0.0.1",
       "inferenceConfig": {
         "livenessRoute": {
           "path": "/",
-          "port": 5001
+          "port": 31311
         },
         "readinessRoute": {
           "path": "/",
-          "port": 5001
+          "port": 31311
         },
         "scoringRoute": {
           "path": "/score",
-          "port": 5001
+          "port": 31311
         }
       }
     },
     "mistralgpu": {
-      "imageUrl": "mcr.microsoft.com/azureedgeai/models/gpu/mistral-7b-v02-onnx:0.0.1",
+      "imageUrl": "mcr.microsoft.com/azureedgeai/models/gpu/mistral-7b-v02:0.0.1",
       "inferenceConfig": {
         "livenessRoute": {
-          "path": "/",
+          "path": "/health",
           "port": 5001
         },
         "readinessRoute": {
-          "path": "/",
+          "path": "/health",
           "port": 5001
         },
         "scoringRoute": {
