@@ -142,6 +142,16 @@
           "path": "/score",
           "port": 5001
         }
+      },
+      "livenessProbe": {
+        "failureThreshold": 60,
+        "initialDelay": "PT10M",
+        "period": "PT1M"
+      },
+      "readinessProbe": {
+        "failureThreshold": 60,
+        "initialDelay": "PT10M",
+        "period": "PT1M"
       }
     },
     "whisper": {
@@ -431,6 +441,8 @@
         "requestSettings": {
           "requestTimeout": "[concat('PT',parameters('scoringTimeout'),'S')]"
         },
+        "livenessProbe": "[if(equals(variables(parameters('modelName')), 'yolof'), variables(parameters('modelName')).livenessProbe, json('null'))]",
+        "readinessProbe": "[if(equals(variables(parameters('modelName')), 'yolof'), variables(parameters('modelName')).readinessProbe, json('null'))]",
         "scaleSettings": "[if(equals(parameters('autoscaling'), true()), variables('scaleSettings'), json('null'))]",
         "environmentId": "[variables('envResourceId')]",
         "properties": {}
