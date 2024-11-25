@@ -19,11 +19,11 @@
                             }
                         },
                         {
-                            "name": "aksClusters",
+                            "name": "checkRgExists",
                             "type": "Microsoft.Solutions.ArmApiControl",
                             "request": {
                                 "method": "GET",
-                                "path": "[concat(steps('basic').resourceScope.subscription.id,'/providers/Microsoft.Kubernetes/ConnectedClusters/s46406b3-aks-4/providers/Microsoft.HybridContainerService/provisionedClusterInstances/default?api-version=2024-01-01')]"
+                                "path": "[concat(steps('basic').resourceScope.subscription.id,'/resourcegroups/',steps('basic').resourceScope.resourceGroup.name,'?api-version=2021-04-01')]"
                             }
                         },
                         {
@@ -31,7 +31,7 @@
                             "type": "Microsoft.Solutions.ArmApiControl",
                             "request": {
                                 "method": "GET",
-                                "path": "[concat(steps('basic').resourceScope.subscription.id,'/resourceGroups/',steps('basic').resourceScope.resourceGroup.name,'/providers/Microsoft.kubernetes/connectedclusters?api-version=2024-01-01')]"
+                                "path": "[concat(steps('basic').resourceScope.subscription.id,if(equals(steps('basic').checkRgExists.name, steps('basic').resourceScope.resourceGroup.name),concat('/resourceGroups/',steps('basic').resourceScope.resourceGroup.name),''),'/providers/Microsoft.kubernetes/connectedclusters?api-version=2024-01-01')]"
                             }
                         },
                         {
@@ -121,7 +121,7 @@
                             "placeholder": "Enter the name of the workspace.",
                             "toolTip": "",
                             "constraints": {
-                                "required": "[equals(steps('basic').workspaceOption, 'create')]",
+                                "required": "true",
                                 "validations": [
                                     {
                                         "regex": "^[a-zA-Z0-9_-]{3,33}$",
@@ -167,7 +167,7 @@
                                     "name": "endpointLink",
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Endpoint name",
-                                    "placeholder": "",
+                                    "placeholder": "Provide the endpoint name",
                                     "toolTip": "A Kubernetes online endpoint with this name is created on the selected AKS cluster.",
                                     "constraints": {
                                         "required": true,
@@ -187,7 +187,7 @@
                                 {
                                     "name": "authenticationType",
                                     "type": "Microsoft.Common.OptionsGroup",
-                                    "label": "Authentication Type",
+                                    "label": "Authentication type",
                                     "defaultValue": "Azure ML token-based (This authentication type uses a token that must be periodically refreshed)",
                                     "toolTip": "Select from key-based or token-based authentication for the endpoint. Learn More ",
                                     "constraints": {
@@ -275,7 +275,7 @@
                                     "name": "instanceCount",
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Instance count",
-                                    "placeholder": "Please input the instance count",
+                                    "placeholder": "Provide instance count",
                                     "toolTip": "The number of instances to use for the deployment. Specify the value based on the workload you expect. For high availability, Microsoft recommends you set it to at least 3.",
                                     "constraints": {
                                         "required": true,
@@ -292,7 +292,7 @@
                                     "name": "requestCpu",
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "CPU requests",
-                                    "defaultValue": "[if(endsWith(steps('configuration').model.modelName, 'cpu'), 4, if(equals(steps('configuration').model.modelName, 'whisper'), 4, if(equals(steps('configuration').model.modelName, 't5'), 4, if(equals(steps('configuration').model.modelName, 'yolof'), 4, 8))))]",
+                                    "placeholder": "[if(endsWith(steps('configuration').model.modelName, 'cpu'), 4, if(equals(steps('configuration').model.modelName, 'whisper'), 6, if(equals(steps('configuration').model.modelName, 't5'), 4, if(equals(steps('configuration').model.modelName, 'yolof'), 4, 8))))]",
                                     "toolTip": "Set CPU for the pod running the model.",
                                     "constraints": {
                                         "required": true,
@@ -330,7 +330,7 @@
                                     "name": "requestMemory",
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Memory requests (in Gi)",
-                                    "defaultValue": "[if(endsWith(steps('configuration').model.modelName, 'cpu'), 16, if(equals(steps('configuration').model.modelName, 'whisper'), 14, if(equals(steps('configuration').model.modelName, 't5'), 16, if(equals(steps('configuration').model.modelName, 'yolof'), 14, 28))))]",
+                                    "placeholder": "[if(endsWith(steps('configuration').model.modelName, 'cpu'), 16, if(equals(steps('configuration').model.modelName, 'whisper'), 16, if(equals(steps('configuration').model.modelName, 't5'), 16, if(equals(steps('configuration').model.modelName, 'yolof'), 14, 28))))]",
                                     "toolTip": "Set memory for the pod running the model.",
                                     "constraints": {
                                         "required": true,
@@ -392,8 +392,8 @@
                                 {
                                     "name": "scoringTimeout",
                                     "type": "Microsoft.Common.TextBox",
-                                    "label": "Scoring Timeout (in seconds)",
-                                    "placeholder": "Please input the scoring timeout in seconds",
+                                    "label": "Scoring timeout (in seconds)",
+                                    "placeholder": "Provide scoring timeout in seconds",
                                     "toolTip": "",
                                     "constraints": {
                                         "required": true,
@@ -409,8 +409,8 @@
                                 {
                                     "name": "trafficAllocation",
                                     "type": "Microsoft.Common.TextBox",
-                                    "label": "Traffic Allocation (%)",
-                                    "placeholder": "Please input the percentage of traffic allocation",
+                                    "label": "Traffic allocation (%)",
+                                    "placeholder": "Provide percentage of traffic allocation",
                                     "defaultValue": "100",
                                     "toolTip": "",
                                     "constraints": {
@@ -469,11 +469,11 @@
                                 {
                                     "name": "minInstances",
                                     "type": "Microsoft.Common.TextBox",
-                                    "label": "Minimum Instance count",
-                                    "placeholder": "Please input the minimum instance count",
+                                    "label": "Minimum instance count",
+                                    "placeholder": "Provide minimum instance count",
                                     "toolTip": "The minimum number of instances to use when autoscaling this deployment.",
                                     "constraints": {
-                                        "required": "[steps('configuration').advanced.autoscaling]",
+                                        "required": "true",
                                         "validations": [
                                             {
                                                 "regex": "^(?:[1-9]|[1-4][0-9]|50)$",
@@ -490,11 +490,11 @@
                                 {
                                     "name": "maxInstances",
                                     "type": "Microsoft.Common.TextBox",
-                                    "label": "Maximum Instance count",
-                                    "placeholder": "Please input the maximum instance count",
+                                    "label": "Maximum instance count",
+                                    "placeholder": "Provide maximum instance count",
                                     "toolTip": "The maximum number of instances to use when autoscaling this deployment.",
                                     "constraints": {
-                                        "required": "[steps('configuration').advanced.autoscaling]",
+                                        "required": "true",
                                         "validations": [
                                             {
                                                 "regex": "^(?:[1-9]|[1-4][0-9]|50)$",
@@ -507,11 +507,11 @@
                                 {
                                     "name": "pollingInterval",
                                     "type": "Microsoft.Common.TextBox",
-                                    "label": "Polling Interval (in seconds)",
-                                    "placeholder": "Please input the polling interval in seconds",
+                                    "label": "Polling interval (in seconds)",
+                                    "placeholder": "Provide polling interval in seconds",
                                     "toolTip": "The frequency at which the autoscaler checks the current load and adjusts the scaling.",
                                     "constraints": {
-                                        "required": "[steps('configuration').advanced.autoscaling]",
+                                        "required": "true",
                                         "validations": [
                                             {
                                                 "regex": "^(?:[1-9][0-9]{0,8}|1000000000)$",
@@ -524,12 +524,12 @@
                                 {
                                     "name": "targetUtilizationPercentage",
                                     "type": "Microsoft.Common.TextBox",
-                                    "label": "Target Utilization Percentage (%)",
-                                    "placeholder": "Please input the percentage of Target Utilization",
+                                    "label": "Target utilization percentage (%)",
+                                    "placeholder": "Provide percentage of Target Utilization",
                                     "defaultValue": "70",
                                     "toolTip": "Target CPU usage for the autoscaler.",
                                     "constraints": {
-                                        "required": "[steps('configuration').advanced.autoscaling]",
+                                        "required": "true",
                                         "validations": [
                                             {
                                                 "regex": "^(?:[1-9]|[1-9][0-9]|100)$",
@@ -551,7 +551,6 @@
                             "name": "tagsByResource",
                             "type": "Microsoft.Common.TagsByResource",
                             "resources": [
-                                "Microsoft.MachineLearningServices/workspaces/computes",
                                 "Microsoft.MachineLearningServices/workspaces/onlineEndpoints",
                                 "Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments"
                             ]
@@ -582,7 +581,8 @@
                 "pollingInterval": "[steps('configuration').advanced.pollingInterval]",
                 "targetUtilizationPercentage": "[steps('configuration').advanced.targetUtilizationPercentage]",
                 "nodeselectorkey": "[steps('configuration').nodeselector.nodeselectorkey]",
-                "nodeselectorvalue": "[steps('configuration').nodeselector.nodeselectorvalue]"
+                "nodeselectorvalue": "[steps('configuration').nodeselector.nodeselectorvalue]",
+                "tagsByResource": "[steps('tags').tagsByResource]"
             },
             "kind": "ResourceGroup",
             "location": "[steps('basic').resourceScope.location.name]",

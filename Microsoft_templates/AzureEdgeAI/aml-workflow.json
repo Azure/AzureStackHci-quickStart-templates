@@ -441,8 +441,8 @@
         "requestSettings": {
           "requestTimeout": "[concat('PT',parameters('scoringTimeout'),'S')]"
         },
-        "livenessProbe": "[if(equals(variables(parameters('modelName')), 'yolof'), variables(parameters('modelName')).livenessProbe, json('null'))]",
-        "readinessProbe": "[if(equals(variables(parameters('modelName')), 'yolof'), variables(parameters('modelName')).readinessProbe, json('null'))]",
+        "livenessProbe": "[if(equals(parameters('modelName'), 'yolof'), variables(parameters('modelName')).livenessProbe, json('null'))]",
+        "readinessProbe": "[if(equals(parameters('modelName'), 'yolof'), variables(parameters('modelName')).readinessProbe, json('null'))]",
         "scaleSettings": "[if(equals(parameters('autoscaling'), true()), variables('scaleSettings'), json('null'))]",
         "environmentId": "[variables('envResourceId')]",
         "properties": {}
