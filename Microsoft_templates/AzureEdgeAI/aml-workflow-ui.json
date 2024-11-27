@@ -48,10 +48,10 @@
                             "type": "Microsoft.Common.DropDown",
                             "label": "AKS cluster",
                             "placeholder": "Select the AKS cluster used to deploy AI model",
-                            "toolTip": "Select your AKS cluster which will be used for AI model deployment. It will become available as a K8 compute target in workspace.",
+                            "toolTip": "The AKS cluster is used for AI model deployment. This cluster becomes available as a Kubernetes Compute target in workspace.",
                             "filter": true,
                             "constraints": {
-                                "allowedValues": "[map(steps('basic').aksClusters.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]",
+                                "allowedValues": "[if(greater(length(steps('basic').resourceScope.resourceGroup.name),0),map(steps('basic').aksClusters.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}'))),null)]",
                                 "required": true
                             },
                             "visible": true
@@ -69,7 +69,7 @@
                             "type": "Microsoft.Common.OptionsGroup",
                             "label": "Azure Machine Learning workspace",
                             "defaultValue": "Use existing",
-                            "toolTip": "The workspace is the top-level resource for Azure Machine Learning, providing a centralized place to work with all the artifacts you create",
+                            "toolTip": "The workspace is the top-level resource for Azure Machine Learning that contains all the artifacts that are created.",
                             "constraints": {
                                 "allowedValues": [
                                     {
@@ -98,7 +98,7 @@
                             "type": "Microsoft.Common.DropDown",
                             "label": "Name",
                             "defaultValue": "",
-                            "placeholder": "Select the existing workspace.",
+                            "placeholder": "Select an existing workspace",
                             "filter": true,
                             "constraints": {
                                 "allowedValues": "[map(steps('basic').amlWorkspaces.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
@@ -118,18 +118,18 @@
                             "name": "amlCreateWorkspace",
                             "type": "Microsoft.Common.TextBox",
                             "label": "Name",
-                            "placeholder": "Enter the name of the workspace.",
+                            "placeholder": "Enter the name of the workspace",
                             "toolTip": "",
                             "constraints": {
                                 "required": "true",
                                 "validations": [
                                     {
                                         "regex": "^[a-zA-Z0-9_-]{3,33}$",
-                                        "message": "Workspace name must begin with a letter. Be 3-33 characters in length. Only consist of Alphanumerics, hyphens, and underscores."
+                                        "message": "Workspace name must begin with a letter. Be 3-33 characters in length. Only consist of Alphanumerics, hyphens, and underscores"
                                     },
                                     {
                                         "isValid": "[not(equals(steps('basic').checkWorkspaceNameAvailability.name, steps('basic').amlCreateWorkspace))]",
-                                        "message": "This workspace name already exists."
+                                        "message": "This workspace name already exists"
                                     }
                                 ]
                             },
@@ -168,17 +168,17 @@
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Endpoint name",
                                     "placeholder": "Provide the endpoint name",
-                                    "toolTip": "A Kubernetes online endpoint with this name is created on the selected AKS cluster.",
+                                    "toolTip": "A Kubernetes online endpoint with this name is created on the selected AKS cluster",
                                     "constraints": {
                                         "required": true,
                                         "validations": [
                                             {
                                                 "regex": "^[A-Za-z][A-Za-z0-9]{2,31}$",
-                                                "message": "Endpoint names must begin with a letter. Be 3-32 characters in length. Only consist of letters and numbers."
+                                                "message": "Endpoint names must begin with a letter. Be 3-32 characters in length. Only consist of letters and numbers"
                                             },
                                             {
                                                 "isValid": "[not(equals(steps('configuration').endpoint.checkEndpointNameAvailability.name, steps('configuration').endpoint.endpointLink))]",
-                                                "message": "This endpoint name already exists."
+                                                "message": "This endpoint name already exists"
                                             }
                                         ]
                                     },
@@ -188,16 +188,16 @@
                                     "name": "authenticationType",
                                     "type": "Microsoft.Common.OptionsGroup",
                                     "label": "Authentication type",
-                                    "defaultValue": "Azure ML token-based (This authentication type uses a token that must be periodically refreshed)",
-                                    "toolTip": "Select from key-based or token-based authentication for the endpoint. Learn More ",
+                                    "defaultValue": "Azure ML token-based (Uses a token that must be periodically refreshed)",
+                                    "toolTip": "Select from key-based or token-based authentication for the endpoint.",
                                     "constraints": {
                                         "allowedValues": [
                                             {
-                                                "label": "Key-based (This authentication type uses a primary key and a secondary key)",
+                                                "label": "Key-based (Uses a primary key and a secondary key)",
                                                 "value": "Key"
                                             },
                                             {
-                                                "label": "Azure ML token-based (This authentication type uses a token that must be periodically refreshed)",
+                                                "label": "Azure ML token-based (Uses a token that must be periodically refreshed)",
                                                 "value": "AMLToken"
                                             }
                                         ],
@@ -216,9 +216,9 @@
                                 {
                                     "name": "modelName",
                                     "type": "Microsoft.Common.DropDown",
-                                    "label": "AI Model",
+                                    "label": "AI model",
                                     "placeholder": "Select a model",
-                                    "toolTip": "Select an AI model to deploy.",
+                                    "toolTip": "Select an AI model to deploy",
                                     "filter": true,
                                     "multiLine": true,
                                     "constraints": {
@@ -275,8 +275,8 @@
                                     "name": "instanceCount",
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Instance count",
-                                    "placeholder": "Provide instance count",
-                                    "toolTip": "The number of instances to use for the deployment. Specify the value based on the workload you expect. For high availability, Microsoft recommends you set it to at least 3.",
+                                    "placeholder": "Enter an instance count from 1-50",
+                                    "toolTip": "The number of instances to deploy based on the expected workload. For high availability, set it to at least 3.",
                                     "constraints": {
                                         "required": true,
                                         "validations": [
@@ -293,7 +293,7 @@
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "CPU requests",
                                     "placeholder": "[if(endsWith(steps('configuration').model.modelName, 'cpu'), 4, if(equals(steps('configuration').model.modelName, 'whisper'), 6, if(equals(steps('configuration').model.modelName, 't5'), 4, if(equals(steps('configuration').model.modelName, 'yolof'), 4, 8))))]",
-                                    "toolTip": "Set CPU for the pod running the model.",
+                                    "toolTip": "The number of CPU instances to deploy based on the expected workload.",
                                     "constraints": {
                                         "required": true,
                                         "validations": [
@@ -314,7 +314,7 @@
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "CPU limit",
                                     "placeholder": "",
-                                    "toolTip": "Set CPU resources limit for the model pod.",
+                                    "toolTip": "The maximum number of CPU instances per compute instance running the model.",
                                     "constraints": {
                                         "required": true,
                                         "validations": [
@@ -393,7 +393,7 @@
                                     "name": "scoringTimeout",
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Scoring timeout (in seconds)",
-                                    "placeholder": "Provide scoring timeout in seconds",
+                                    "placeholder": "Enter the scoring timeout in seconds",
                                     "toolTip": "",
                                     "constraints": {
                                         "required": true,
@@ -436,7 +436,7 @@
                                     "name": "nodeselectorkey",
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Name",
-                                    "toolTip": "Specify which node a pod should run on. The node must have a corresponding label. Provide input as key-value pair.",
+                                    "toolTip": "An existing node used to run compute instance.",
                                     "visible": true,
                                     "constraints": {
                                         "required": "[greater(length(steps('configuration').nodeselector.nodeselectorvalue),0)]"
@@ -470,18 +470,18 @@
                                     "name": "minInstances",
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Minimum instance count",
-                                    "placeholder": "Provide minimum instance count",
+                                    "placeholder": "Enter an instance count from 1-50",
                                     "toolTip": "The minimum number of instances to use when autoscaling this deployment.",
                                     "constraints": {
                                         "required": "true",
                                         "validations": [
                                             {
                                                 "regex": "^(?:[1-9]|[1-4][0-9]|50)$",
-                                                "message": "Should be a valid number between 1 and 50"
+                                                "message": "Should be a valid number from 1-50"
                                             },
                                             {
                                                 "isValid": "[if(empty(steps('configuration').advanced.maxInstances),true,lessOrEquals(steps('configuration').advanced.minInstances, steps('configuration').advanced.maxInstances))]",
-                                                "message": "Min instance value must be less than max instance value."
+                                                "message": "Minimum instance value must be less than or equal to maximum instance value."
                                             }
                                         ]
                                     },
@@ -491,14 +491,14 @@
                                     "name": "maxInstances",
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Maximum instance count",
-                                    "placeholder": "Provide maximum instance count",
+                                    "placeholder": "Enter an instance count from 1-50",
                                     "toolTip": "The maximum number of instances to use when autoscaling this deployment.",
                                     "constraints": {
                                         "required": "true",
                                         "validations": [
                                             {
                                                 "regex": "^(?:[1-9]|[1-4][0-9]|50)$",
-                                                "message": "Should be a valid number between 1 and 50"
+                                                "message": "Should be a valid number from 1-50 and higher than or equal to minimum instance count"
                                             }
                                         ]
                                     },
