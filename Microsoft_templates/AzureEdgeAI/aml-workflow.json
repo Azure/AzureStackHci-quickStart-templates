@@ -377,9 +377,9 @@
         "resourceId": "[parameters('aksCluster')]",
         "computeLocation": "[parameters('location')]",
         "properties": {
-          "defaultInstanceType": "defaultinstance",
+          "defaultInstanceType": "customamlinstance",
           "instanceTypes": {
-            "defaultinstance": {
+            "customamlinstance": {
               "nodeSelector": "[if(greater(length(parameters('nodeselectorkey')),0), variables('nodeselector'), json('null'))]",
               "resources": {
                 "limits": {
@@ -437,7 +437,7 @@
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments'), parameters('tagsByResource')['Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments'], createObject())]",
       "properties": {
         "endpointComputeType": "Kubernetes",
-        "instanceType": "defaultinstance",
+        "instanceType": "customamlinstance",
         "requestSettings": {
           "requestTimeout": "[concat('PT',parameters('scoringTimeout'),'S')]"
         },
