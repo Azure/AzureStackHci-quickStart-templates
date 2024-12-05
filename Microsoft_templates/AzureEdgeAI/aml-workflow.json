@@ -119,10 +119,10 @@
     "deployment": "[concat(variables('computeName'),'-',parameters('modelName'))]",
     "scaleSettings": {
       "scaleType": "TargetUtilization",
-      "maxInstances": "[if(greater(length(parameters('maxInstances')), 0), parameters('maxInstances'), json('null'))]",
-      "minInstances": "[if(greater(length(parameters('minInstances')), 0), parameters('minInstances'), json('null'))]",
-      "pollingInterval": "[if(greater(length(parameters('pollingInterval')), 0),concat('PT',parameters('pollingInterval'),'S'), json('null'))]",
-      "targetUtilizationPercentage": "[if(greater(length(parameters('targetUtilizationPercentage')), 0), parameters('targetUtilizationPercentage'), json('null'))]"
+      "maxInstances": "[if(greater(length(parameters('maxInstances')), 0), parameters('maxInstances'), parameters('instanceCount'))]",
+      "minInstances": "[if(greater(length(parameters('minInstances')), 0), parameters('minInstances'), parameters('instanceCount'))]",
+      "pollingInterval": "[if(greater(length(parameters('pollingInterval')), 0),concat('PT',parameters('pollingInterval'),'S'), 'PT1S')]",
+      "targetUtilizationPercentage": "[if(greater(length(parameters('targetUtilizationPercentage')), 0), parameters('targetUtilizationPercentage'), 70)]"
     },
     "nodeselector": {
       "[parameters('nodeselectorkey')]": "[parameters('nodeselectorvalue')]"
@@ -377,9 +377,9 @@
         "resourceId": "[parameters('aksCluster')]",
         "computeLocation": "[parameters('location')]",
         "properties": {
-          "defaultInstanceType": "defaultinstance",
+          "defaultInstanceType": "customamlinstance",
           "instanceTypes": {
-            "defaultinstance": {
+            "customamlinstance": {
               "nodeSelector": "[if(greater(length(parameters('nodeselectorkey')),0), variables('nodeselector'), json('null'))]",
               "resources": {
                 "limits": {
@@ -437,13 +437,13 @@
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments'), parameters('tagsByResource')['Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments'], createObject())]",
       "properties": {
         "endpointComputeType": "Kubernetes",
-        "instanceType": "defaultinstance",
+        "instanceType": "customamlinstance",
         "requestSettings": {
           "requestTimeout": "[concat('PT',parameters('scoringTimeout'),'S')]"
         },
-        "livenessProbe": "[if(equals(variables(parameters('modelName')), 'yolof'), variables(parameters('modelName')).livenessProbe, json('null'))]",
-        "readinessProbe": "[if(equals(variables(parameters('modelName')), 'yolof'), variables(parameters('modelName')).readinessProbe, json('null'))]",
-        "scaleSettings": "[if(equals(parameters('autoscaling'), true()), variables('scaleSettings'), json('null'))]",
+        "livenessProbe": "[if(equals(parameters('modelName'), 'yolof'), variables(parameters('modelName')).livenessProbe, json('null'))]",
+        "readinessProbe": "[if(equals(parameters('modelName'), 'yolof'), variables(parameters('modelName')).readinessProbe, json('null'))]",
+        "scaleSettings": "[variables('scaleSettings')]",
         "environmentId": "[variables('envResourceId')]",
         "properties": {}
       }
