@@ -1,0 +1,231 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "apiVersion": {
+        "value": "2024-02-15-preview"
+      },
+      "deploymentMode": {
+        "value": ""
+      },
+      "keyVaultName": {
+        "value": ""
+      },
+      "softDeleteRetentionDays": {
+        "value": 30
+      },
+      "diagnosticStorageAccountName": {
+        "value": ""
+      },
+      "logsRetentionInDays": {
+        "value": 0
+      },
+      "storageAccountType": {
+        "value": "Standard_LRS"
+      },
+      "clusterName": {
+        "value": ""
+      },
+      "location": {
+        "value": ""
+      },
+      "tenantId": {
+        "value": ""
+      },
+      "witnessType": {
+        "value": "Cloud"
+      },
+      "ClusterWitnessStorageAccountName": {
+        "value": ""
+      },
+      "localAdminUserName": {
+        "value": ""
+      },
+      "localAdminPassword": {
+        "value": null
+      },
+      "AzureStackLCMAdminUsername": {
+        "value": ""
+      },
+      "AzureStackLCMAdminPassword": {
+        "value": null
+      },
+      "arbDeploymentAppId": {
+        "value": ""
+      },
+      "arbDeploymentAppSecret": {
+        "value": ""
+      },
+      "arcNodeResourceIds": {
+        "value": []
+      },
+      "domainFqdn": {
+        "value": ""
+      },
+      "namingPrefix": {
+        "value": ""
+      },
+      "adouPath": {
+        "value": ""
+      },
+      "securityLevel": {
+        "value": "Recommended"
+      },
+      "driftControlEnforced": {
+        "value": true
+      },
+      "credentialGuardEnforced": {
+        "value": true
+      },
+      "smbSigningEnforced": {
+        "value": true
+      },
+      "smbClusterEncryption": {
+        "value": false
+      },
+      "bitlockerBootVolume": {
+        "value": true
+      },
+      "bitlockerDataVolumes": {
+        "value": true
+      },
+      "wdacEnforced": {
+        "value": true
+      },
+      "streamingDataClient": {
+        "value": true
+      },
+      "euLocation": {
+        "value": true
+      },
+      "episodicDataUpload": {
+        "value": true
+      },
+      "configurationMode": {
+        "value": "Express"
+      },
+      "subnetMask": {
+        "value": ""
+      },
+      "defaultGateway": {
+        "value": ""
+      },
+      "startingIPAddress": {
+        "value": ""
+      },
+      "endingIPAddress": {
+        "value": ""
+      },
+      "dnsServers": {
+        "value": []
+      },
+      "physicalNodesSettings": {
+        "value": [
+          {
+            "name": "",
+            "ipv4Address": ""
+          }
+        ]
+      },
+      "networkingType": {
+        "value": "switchedMultiServerDeployment"
+      },
+      "networkingPattern": {
+        "value": "convergedManagementCompute"
+      },
+      "intentList": {
+        "value": [
+          {
+            "name": "Compute_Management",
+            "trafficType": [
+              "Compute",
+              "Management"
+            ],
+            "adapter": [],
+            "overrideVirtualSwitchConfiguration": false,
+            "virtualSwitchConfigurationOverrides": {
+              "enableIov": "",
+              "loadBalancingAlgorithm": ""
+            },
+            "overrideQosPolicy": false,
+            "qosPolicyOverrides": {
+              "priorityValue8021Action_Cluster": "7",
+              "priorityValue8021Action_SMB": "3",
+              "bandwidthPercentage_SMB": "50"
+            },
+            "overrideAdapterProperty": false,
+            "adapterPropertyOverrides": {
+              "jumboPacket": "1514",
+              "networkDirect": "Disabled",
+              "networkDirectTechnology": ""
+            }
+          },
+          {
+              "name": "Storage",
+              "trafficType": [
+                  "Storage"
+              ],
+              "adapter": [],
+              "overrideVirtualSwitchConfiguration": false,
+              "virtualSwitchConfigurationOverrides": {
+                  "enableIov": "",
+                  "loadBalancingAlgorithm": ""
+              },
+              "overrideQosPolicy": false,
+              "qosPolicyOverrides": {
+                  "priorityValue8021Action_Cluster": "7",
+                  "priorityValue8021Action_SMB": "3",
+                  "bandwidthPercentage_SMB": "50"
+              },
+              "overrideAdapterProperty": false,
+              "adapterPropertyOverrides": {
+                  "jumboPacket": "9014",
+                  "networkDirect": "Enabled",
+                  "networkDirectTechnology": ""
+              }
+          }
+        ]
+      },
+      "storageNetworkList": {
+        "value": [
+          {
+            "name": "Storage1Network",
+            "networkAdapterName": "",
+            "vlanId": "711"
+          },
+          {
+            "name": "Storage2Network",
+            "networkAdapterName": "",
+            "vlanId": "712"
+          }
+        ]
+      },
+      "storageConnectivitySwitchless": {
+        "value": false
+      },
+      "customLocation": {
+        "value": ""
+      },
+      "sbeVersion":{
+        "value": ""
+      },
+      "sbeFamily":{
+        "value": "ThinkAgileMXPremier"
+      },
+      "sbePublisher":{
+        "value": "Lenovo"
+      },
+      "sbeManifestSource":{
+        "value": "default"
+      },
+      "sbeManifestCreationDate":{
+        "value": ""
+      },
+      "partnerCredentiallist": {
+        "value": []
+      },
+      "partnerProperties": {
+        "value":[]
+      }
+    }
+  }
