@@ -6,7 +6,7 @@
     "summary": "This template creates an Azure Stack HCI 23H2 cluster using an ARM template with SBE Partner Parameters",
     "githubUsername": "Lenovo",
     "validationType": "Manual",
-    "dateUpdated": "2024-10-16",
+    "dateUpdated": "2025-01-17",
     "tags": {
         "model": "ThinkAgile MX455V3 Edge PR"
     },
