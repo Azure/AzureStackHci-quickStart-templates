@@ -1,14 +1,14 @@
 {
     "$schema": "https://aka.ms/azure-quickstart-templates-metadata-schema#",
     "type": "QuickStart",
-    "itemDisplayName": "Template with SBE Parameters for ThinkAgile MX455V3 Edge PR",
+    "itemDisplayName": "Template with SBE Parameters for ThinkAgile MX650 V3 PR",
     "description": "This template includes the SBE parameter PartnerProperties and CredentialList to be filled at deployment to be used by the SBE",
     "summary": "This template creates an Azure Stack HCI 23H2 cluster using an ARM template with SBE Partner Parameters",
     "githubUsername": "Lenovo",
     "validationType": "Manual",
     "dateUpdated": "2025-01-17",
     "tags": {
-        "model": "ThinkAgile MX455V3 Edge PR"
+        "model": "ThinkAgile MX650 V3 PR"
     },
     "eula": "https://download.lenovo.com/servers/L814-0008-01_Lenovo_International_Program_License_Agreement_Oct_2018.htm"
   }
