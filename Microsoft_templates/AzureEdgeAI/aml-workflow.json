@@ -113,6 +113,7 @@
     "containerRegistryName": "[substring(concat('cr',uniqueString(resourceGroup().id, deployment().name )),0,7)]",
     "endpointResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/onlineEndpoints',parameters('amlWorkspace'), parameters('endpointLink'))]",
     "computeName": "[concat('compute-',parameters('compute'))]",
+    "computeInstanceName": "[concat(variables('computeName'),'-instance')]",
     "computeResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/computes',parameters('amlWorkspace'),variables('computeName'))]",
     "envName": "[concat(variables('computeName'),'-env')]",
     "envResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/environments/versions',parameters('amlWorkspace'),variables('envName'),'1')]",
@@ -377,9 +378,9 @@
         "resourceId": "[parameters('aksCluster')]",
         "computeLocation": "[parameters('location')]",
         "properties": {
-          "defaultInstanceType": "customamlinstance",
+          "defaultInstanceType": "[variables('computeInstanceName')]",
           "instanceTypes": {
-            "customamlinstance": {
+            "[variables('computeInstanceName')]": {
               "nodeSelector": "[if(greater(length(parameters('nodeselectorkey')),0), variables('nodeselector'), json('null'))]",
               "resources": {
                 "limits": {
@@ -437,7 +438,7 @@
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments'), parameters('tagsByResource')['Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments'], createObject())]",
       "properties": {
         "endpointComputeType": "Kubernetes",
-        "instanceType": "customamlinstance",
+        "instanceType": "[variables('computeInstanceName')]",
         "requestSettings": {
           "requestTimeout": "[concat('PT',parameters('scoringTimeout'),'S')]"
         },
